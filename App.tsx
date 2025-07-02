@@ -130,7 +130,7 @@ function App() {
                     </Text>
                   </View>
                   <View style={styles.summaryWeather}>
-                    {day.icon && <Image source={{ uri: day.icon }} style={styles.icon} />}
+
                     <Text style={styles.descriptionText}>{day.description}</Text>
                   </View>
                   <View style={styles.summaryTemp}>
@@ -143,10 +143,9 @@ function App() {
                     {hoursForDate(day.date).map((hour) => (
                       <View key={hour.startTime} style={styles.hour}>
                         <View style={styles.hourPrimary}>
-                          {hour.icon && <Image source={{ uri: hour.icon }} style={styles.iconSmall} />}
                           <View>
                             <Text style={styles.hourTime}>
-                              {new Date(hour.startTime).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
+                              {new Date(day.date).toLocaleDateString(undefined, { weekday: 'short' })} {new Date(hour.startTime).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
                             </Text>
                             <Text style={styles.hourTemp}>{hour.temperature}°F</Text>
                             <Text style={styles.hourDescription}>{hour.shortForecast}</Text>
@@ -167,7 +166,7 @@ function App() {
                           </View>
                           {hour.probabilityOfPrecipitation && hour.probabilityOfPrecipitation.value !== null && (
                             <View style={styles.hourlyDetailItem}>
-                              <Text style={styles.hourlyDetailTitle}>Precipitation:</Text>
+                              <Text style={styles.hourlyDetailTitle}>Precip:</Text>
                               <Text style={styles.hourlyDetailValue}>{hour.probabilityOfPrecipitation.value}%</Text>
                             </View>
                           )}
