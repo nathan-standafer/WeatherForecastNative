@@ -143,13 +143,11 @@ function App() {
                     {hoursForDate(day.date).map((hour) => (
                       <View key={hour.startTime} style={styles.hour}>
                         <View style={styles.hourPrimary}>
-                          <View>
-                            <Text style={styles.hourTime}>
-                              {new Date(day.date).toLocaleDateString(undefined, { weekday: 'short' })} {new Date(hour.startTime).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
-                            </Text>
-                            <Text style={styles.hourTemp}>{hour.temperature}°F</Text>
-                            <Text style={styles.hourDescription}>{hour.shortForecast}</Text>
-                          </View>
+                          <Text style={styles.hourTime}>
+                            {new Date(day.date).toLocaleDateString(undefined, { weekday: 'short' })} {new Date(hour.startTime).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
+                          </Text>
+                          <Text style={styles.hourTemp}>{hour.temperature}°F</Text>
+                          <Text style={styles.hourDescription}>{hour.shortForecast}</Text>
                         </View>
                         <View style={styles.hourSecondary}>
                           <View style={styles.hourlyDetailItem}>
@@ -162,18 +160,12 @@ function App() {
                           </View>
                           <View style={styles.hourlyDetailItem}>
                             <Text style={styles.hourlyDetailTitle}>Wind:</Text>
-                            <Text style={styles.hourlyDetailValue}>{hour.windSpeed}</Text>
+                            <Text style={styles.hourlyDetailValue}>{hour.windSpeed} {hour.windDirection}</Text>
                           </View>
                           {hour.probabilityOfPrecipitation && hour.probabilityOfPrecipitation.value !== null && (
                             <View style={styles.hourlyDetailItem}>
                               <Text style={styles.hourlyDetailTitle}>Precip:</Text>
                               <Text style={styles.hourlyDetailValue}>{hour.probabilityOfPrecipitation.value}%</Text>
-                            </View>
-                          )}
-                          {hour.cloudCover && (
-                            <View style={styles.hourlyDetailItem}>
-                              <Text style={styles.hourlyDetailTitle}>Cloud Cover:</Text>
-                              <Text style={styles.hourlyDetailValue}>{hour.cloudCover.value}%</Text>
                             </View>
                           )}
                         </View>
@@ -199,7 +191,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: 25,
   },
   appContainer: {
     backgroundColor: '#ffffff',
@@ -218,19 +210,19 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: '#263238',
-    marginBottom: 25,
+    marginBottom: 10,
   },
   locationText: {
     fontSize: 20,
     fontWeight: '600',
     color: '#455a64',
-    marginTop: 20,
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
   },
   form: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 30,
+    marginBottom: 10,
     width: '100%',
   },
   input: {
@@ -270,7 +262,7 @@ const styles = StyleSheet.create({
   },
   dailyForecast: {
     width: '100%',
-    marginTop: 20,
+    marginTop: 5,
     alignItems: 'center',
   },
   dayForecast: {
@@ -278,7 +270,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e0e0e0',
     borderRadius: 10,
-    marginVertical: 10,
+    marginVertical: 5,
     paddingHorizontal: 20,
     paddingVertical: 15,
     width: '100%',
@@ -306,8 +298,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   summaryDate: {
-    flex: 1,
     alignItems: 'flex-start',
+    paddingRight: 20
   },
   summaryWeather: {
     flex: 2,
@@ -345,30 +337,30 @@ const styles = StyleSheet.create({
     color: '#263238',
   },
   hourlyDetails: {
-    marginTop: 15,
-    paddingTop: 15,
+    marginTop: 10,
+    paddingTop: 10,
+    paddingLeft: 15,
     borderTopWidth: 1,
     borderTopColor: '#cfd8dc',
     width: '100%',
   },
   hour: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
+    paddingVertical: 5,
     borderBottomWidth: 1,
     borderBottomColor: '#eceff1',
+    gap: 0,
   },
   hourPrimary: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
+    width: '40%',
+    paddingTop: 5,
+    paddingRight: 10,
   },
   hourSecondary: {
+    flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-end',
-    alignItems: 'center',
-    flex: 1,
   },
   hourTime: {
     fontWeight: 'bold',
@@ -383,6 +375,7 @@ const styles = StyleSheet.create({
   hourDescription: {
     fontSize: 15,
     color: '#546e7a',
+    flex: 1,
   },
   iconSmall: {
     width: 40,
