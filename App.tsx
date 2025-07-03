@@ -123,10 +123,10 @@ function App() {
                 <TouchableOpacity style={styles.summary} onPress={() => toggleExpand(day.date)}>
                   <View style={styles.summaryDate}>
                     <Text style={styles.dateText}>
-                      {new Date(day.date).toLocaleDateString(undefined, { weekday: 'short' })}
+                      {new Date(`${day.date}T00:00:00`).toLocaleDateString(undefined, { weekday: 'short' })}
                     </Text>
                     <Text style={styles.dateDayText}>
-                      {new Date(day.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                      {new Date(`${day.date}T00:00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                     </Text>
                   </View>
                   <View style={styles.summaryWeather}>
@@ -144,12 +144,22 @@ function App() {
                       <View key={hour.startTime} style={styles.hour}>
                         <View style={styles.hourPrimary}>
                           <Text style={styles.hourTime}>
-                            {new Date(day.date).toLocaleDateString(undefined, { weekday: 'short' })} {new Date(hour.startTime).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
+                            {new Date(`${day.date}T00:00:00`).toLocaleDateString(undefined, { weekday: 'short' })} {new Date(hour.startTime).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
                           </Text>
                           <Text style={styles.hourTemp}>{hour.temperature}°F</Text>
                           <Text style={styles.hourDescription}>{hour.shortForecast}</Text>
                         </View>
                         <View style={styles.hourSecondary}>
+                          {hour.probabilityOfPrecipitation && hour.probabilityOfPrecipitation.value !== null && (
+                            <View style={styles.hourlyDetailItem}>
+                              <Text style={styles.hourlyDetailTitle}>Precip:</Text>
+                              <Text style={styles.hourlyDetailValue}>{hour.probabilityOfPrecipitation.value}%</Text>
+                            </View>
+                          )}
+                          <View style={styles.hourlyDetailItem}>
+                            <Text style={styles.hourlyDetailTitle}>Wind:</Text>
+                            <Text style={styles.hourlyDetailValue}>{hour.windSpeed} {hour.windDirection}</Text>
+                          </View>
                           <View style={styles.hourlyDetailItem}>
                             <Text style={styles.hourlyDetailTitle}>Humidity:</Text>
                             <Text style={styles.hourlyDetailValue}>{hour.relativeHumidity.value}%</Text>
@@ -158,16 +168,6 @@ function App() {
                             <Text style={styles.hourlyDetailTitle}>Dew Point:</Text>
                             <Text style={styles.hourlyDetailValue}>{((hour.dewpoint.value * 9/5) + 32).toFixed(1)}°F</Text>
                           </View>
-                          <View style={styles.hourlyDetailItem}>
-                            <Text style={styles.hourlyDetailTitle}>Wind:</Text>
-                            <Text style={styles.hourlyDetailValue}>{hour.windSpeed} {hour.windDirection}</Text>
-                          </View>
-                          {hour.probabilityOfPrecipitation && hour.probabilityOfPrecipitation.value !== null && (
-                            <View style={styles.hourlyDetailItem}>
-                              <Text style={styles.hourlyDetailTitle}>Precip:</Text>
-                              <Text style={styles.hourlyDetailValue}>{hour.probabilityOfPrecipitation.value}%</Text>
-                            </View>
-                          )}
                         </View>
                       </View>
                     ))}
