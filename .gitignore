@@ -38,6 +38,7 @@ bower_components
 build/Release
 android/app/build
 android/app/.cxx/Debug
+android/.gradle
 
 # Dependency directories
 node_modules/

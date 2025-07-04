@@ -17,7 +17,8 @@ function toTitleCase(str) {
 }
 
 function App() {
-  const [zip, setZip] = useState('');
+  const [query, setQuery] = useState('');
+  const [citySuggestions, setCitySuggestions] = useState([]);
   const [dailyData, setDailyData] = useState([]);
   const [hourlyData, setHourlyData] = useState([]);
   const [expandedDate, setExpandedDate] = useState(null);
@@ -25,7 +26,40 @@ function App() {
   const [error, setError] = useState('');
   const [location, setLocation] = useState('');
 
-  const handleSubmit = async () => {
+  const handleTextChange = (text) => {
+    setQuery(text);
+    if (text.length >= 4 && isNaN(text)) {
+      const filtered = zipData.filter(item =>
+        item['PHYSICAL CITY'].toLowerCase().startsWith(text.toLowerCase())
+      );
+      
+      const uniqueMatches = [];
+      const seen = new Set();
+
+      for (const item of filtered) {
+        const key = `${item['PHYSICAL CITY']},${item['PHYSICAL STATE']}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          uniqueMatches.push(item);
+        }
+        if (uniqueMatches.length >= 10) {
+          break;
+        }
+      }
+      
+      setCitySuggestions(uniqueMatches);
+    } else {
+      setCitySuggestions([]);
+    }
+  };
+
+  const onCitySelect = (city) => {
+    setQuery(city['PHYSICAL ZIP']);
+    setCitySuggestions([]);
+    handleSubmit(city['PHYSICAL ZIP']);
+  };
+
+  const handleSubmit = async (zip) => {
     console.log("handleSubmit triggered");
     setError('');
     setLocation('');
@@ -115,15 +149,23 @@ function App() {
           <View style={styles.form}>
             <TextInput
               style={styles.input}
-              value={zip}
-              onChangeText={setZip}
-              placeholder="Enter ZIP code"
-              keyboardType="numeric"
+              value={query}
+              onChangeText={handleTextChange}
+              placeholder="Enter ZIP code or city name"
             />
-            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+            <TouchableOpacity style={styles.button} onPress={() => handleSubmit(query)}>
               <Text style={styles.buttonText}>Submit</Text>
             </TouchableOpacity>
           </View>
+          {citySuggestions.length > 0 && (
+            <View style={styles.suggestionsContainer}>
+              {citySuggestions.map((item, index) => (
+                <TouchableOpacity key={index} style={styles.suggestionItem} onPress={() => onCitySelect(item)}>
+                  <Text>{item['PHYSICAL CITY']}, {item['PHYSICAL STATE']}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
 
           {location ? <Text style={styles.locationText}>Weather forecast for {location}</Text> : null}
 
@@ -409,6 +451,23 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#37474f',
     fontSize: 15,
+  },
+  suggestionsContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    marginTop: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    width: '100%',
+    maxWidth: 300,
+  },
+  suggestionItem: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
   },
 });
 
