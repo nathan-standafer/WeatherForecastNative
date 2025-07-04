@@ -1,3 +1,4 @@
+import { zipData } from './data/zipData';
 import React, { useState } from 'react';
 import {
   SafeAreaView,
@@ -10,6 +11,10 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
+
+function toTitleCase(str) {
+  return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+}
 
 function App() {
   const [zip, setZip] = useState('');
@@ -29,12 +34,20 @@ function App() {
     setExpandedDate(null);
     setLoading(true);
     try {
-      console.log(`Fetching zip data for ${zip}`);
-      const response = await fetch(`https://api.zippopotam.us/us/${zip}`);
-      if (!response.ok) throw new Error('Invalid ZIP code');
-      const zipData = await response.json();
-      console.log("Zip data received:", zipData);
-      const place = zipData.places[0];
+      console.log(`Looking up zip data for ${zip}`);
+      const zipInfo = zipData.find(row => row['PHYSICAL ZIP'] === zip);
+
+      if (!zipInfo) {
+        throw new Error('Invalid ZIP code');
+      }
+
+      console.log("Zip data found:", zipInfo);
+      const place = {
+        'place name': toTitleCase(zipInfo['PHYSICAL CITY']),
+        'state abbreviation': zipInfo['PHYSICAL STATE'],
+        latitude: zipInfo.latitude,
+        longitude: zipInfo.longitude,
+      };
       setLocation(`${place["place name"]}, ${place["state abbreviation"]}`);
       const lat = place.latitude;
       const lon = place.longitude;
