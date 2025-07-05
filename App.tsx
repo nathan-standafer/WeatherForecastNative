@@ -156,7 +156,7 @@ function App() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.scrollViewContent}>
           <View style={styles.appContainer}>
             <Text style={styles.title}>7-Day Weather Forecast</Text>
             <View style={styles.form}>
