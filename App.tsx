@@ -1,7 +1,10 @@
+import {
+  SafeAreaProvider,
+  SafeAreaView,
+} from 'react-native-safe-area-context';
 import { zipData } from './data/zipData';
 import React, { useState } from 'react';
 import {
-  SafeAreaView,
   StyleSheet,
   View,
   Text,
@@ -9,7 +12,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
-  Image,
 } from 'react-native';
 
 function toTitleCase(str) {
@@ -42,12 +44,22 @@ function App() {
           seen.add(key);
           uniqueMatches.push(item);
         }
-        if (uniqueMatches.length >= 10) {
-          break;
-        }
       }
       
-      setCitySuggestions(uniqueMatches);
+      uniqueMatches.sort((a, b) => {
+        const cityA = a['PHYSICAL CITY'].toLowerCase();
+        const cityB = b['PHYSICAL CITY'].toLowerCase();
+        const stateA = a['PHYSICAL STATE'].toLowerCase();
+        const stateB = b['PHYSICAL STATE'].toLowerCase();
+
+        if (cityA < cityB) return -1;
+        if (cityA > cityB) return 1;
+        if (stateA < stateB) return -1;
+        if (stateA > stateB) return 1;
+        return 0;
+      });
+
+      setCitySuggestions(uniqueMatches.slice(0, 15));
     } else {
       setCitySuggestions([]);
     }
@@ -142,98 +154,100 @@ function App() {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <View style={styles.appContainer}>
-          <Text style={styles.title}>7-Day Weather Forecast</Text>
-          <View style={styles.form}>
-            <TextInput
-              style={styles.input}
-              value={query}
-              onChangeText={handleTextChange}
-              placeholder="Enter ZIP code or city name"
-            />
-            <TouchableOpacity style={styles.button} onPress={() => handleSubmit(query)}>
-              <Text style={styles.buttonText}>Submit</Text>
-            </TouchableOpacity>
-          </View>
-          {citySuggestions.length > 0 && (
-            <View style={styles.suggestionsContainer}>
-              {citySuggestions.map((item, index) => (
-                <TouchableOpacity key={index} style={styles.suggestionItem} onPress={() => onCitySelect(item)}>
-                  <Text>{item['PHYSICAL CITY']}, {item['PHYSICAL STATE']}</Text>
-                </TouchableOpacity>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+          <View style={styles.appContainer}>
+            <Text style={styles.title}>7-Day Weather Forecast</Text>
+            <View style={styles.form}>
+              <TextInput
+                style={styles.input}
+                value={query}
+                onChangeText={handleTextChange}
+                placeholder="Enter ZIP code or city name"
+              />
+              <TouchableOpacity style={styles.button} onPress={() => handleSubmit(query)}>
+                <Text style={styles.buttonText}>Submit</Text>
+              </TouchableOpacity>
+            </View>
+            {citySuggestions.length > 0 && (
+              <View style={styles.suggestionsContainer}>
+                {citySuggestions.map((item, index) => (
+                  <TouchableOpacity key={index} style={styles.suggestionItem} onPress={() => onCitySelect(item)}>
+                    <Text>{item['PHYSICAL CITY']}, {item['PHYSICAL STATE']}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+
+            {location ? <Text style={styles.locationText}>Weather forecast for {location}</Text> : null}
+
+            {loading ? <ActivityIndicator size="large" color="#007bff" /> : null}
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+            <View style={styles.dailyForecast}>
+              {dailyData.map((day) => (
+                <View key={day.date} style={[styles.dayForecast, expandedDate === day.date && styles.dayForecastExpanded]}>
+                  <TouchableOpacity style={styles.summary} onPress={() => toggleExpand(day.date)}>
+                    <View style={styles.summaryDate}>
+                      <Text style={styles.dateText}>
+                        {new Date(`${day.date}T00:00:00`).toLocaleDateString(undefined, { weekday: 'short' })}
+                      </Text>
+                      <Text style={styles.dateDayText}>
+                        {new Date(`${day.date}T00:00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                      </Text>
+                    </View>
+                    <View style={styles.summaryWeather}>
+
+                      <Text style={styles.descriptionText}>{day.description}</Text>
+                    </View>
+                    <View style={styles.summaryTemp}>
+                      <Text style={styles.tempText}>High: {day.high}°F</Text>
+                      <Text style={styles.tempText}>Low: {day.low}°F</Text>
+                    </View>
+                  </TouchableOpacity>
+                  {expandedDate === day.date && (
+                    <View style={styles.hourlyDetails}>
+                      {hoursForDate(day.date).map((hour) => (
+                        <View key={hour.startTime} style={styles.hour}>
+                          <View style={styles.hourPrimary}>
+                            <Text style={styles.hourTime}>
+                              {new Date(`${day.date}T00:00:00`).toLocaleDateString(undefined, { weekday: 'short' })} {new Date(hour.startTime).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
+                            </Text>
+                            <Text style={styles.hourTemp}>{hour.temperature}°F</Text>
+                            <Text style={styles.hourDescription}>{hour.shortForecast}</Text>
+                          </View>
+                          <View style={styles.hourSecondary}>
+                            {hour.probabilityOfPrecipitation && hour.probabilityOfPrecipitation.value !== null && (
+                              <View style={styles.hourlyDetailItem}>
+                                <Text style={styles.hourlyDetailTitle}>Precip:</Text>
+                                <Text style={styles.hourlyDetailValue}>{hour.probabilityOfPrecipitation.value}%</Text>
+                              </View>
+                            )}
+                            <View style={styles.hourlyDetailItem}>
+                              <Text style={styles.hourlyDetailTitle}>Wind:</Text>
+                              <Text style={styles.hourlyDetailValue}>{hour.windSpeed} {hour.windDirection}</Text>
+                            </View>
+                            <View style={styles.hourlyDetailItem}>
+                              <Text style={styles.hourlyDetailTitle}>Humidity:</Text>
+                              <Text style={styles.hourlyDetailValue}>{hour.relativeHumidity.value}%</Text>
+                            </View>
+                            <View style={styles.hourlyDetailItem}>
+                              <Text style={styles.hourlyDetailTitle}>Dew Point:</Text>
+                              <Text style={styles.hourlyDetailValue}>{((hour.dewpoint.value * 9/5) + 32).toFixed(1)}°F</Text>
+                            </View>
+                          </View>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                </View>
               ))}
             </View>
-          )}
-
-          {location ? <Text style={styles.locationText}>Weather forecast for {location}</Text> : null}
-
-          {loading ? <ActivityIndicator size="large" color="#007bff" /> : null}
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-          <View style={styles.dailyForecast}>
-            {dailyData.map((day) => (
-              <View key={day.date} style={[styles.dayForecast, expandedDate === day.date && styles.dayForecastExpanded]}>
-                <TouchableOpacity style={styles.summary} onPress={() => toggleExpand(day.date)}>
-                  <View style={styles.summaryDate}>
-                    <Text style={styles.dateText}>
-                      {new Date(`${day.date}T00:00:00`).toLocaleDateString(undefined, { weekday: 'short' })}
-                    </Text>
-                    <Text style={styles.dateDayText}>
-                      {new Date(`${day.date}T00:00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                    </Text>
-                  </View>
-                  <View style={styles.summaryWeather}>
-
-                    <Text style={styles.descriptionText}>{day.description}</Text>
-                  </View>
-                  <View style={styles.summaryTemp}>
-                    <Text style={styles.tempText}>High: {day.high}°F</Text>
-                    <Text style={styles.tempText}>Low: {day.low}°F</Text>
-                  </View>
-                </TouchableOpacity>
-                {expandedDate === day.date && (
-                  <View style={styles.hourlyDetails}>
-                    {hoursForDate(day.date).map((hour) => (
-                      <View key={hour.startTime} style={styles.hour}>
-                        <View style={styles.hourPrimary}>
-                          <Text style={styles.hourTime}>
-                            {new Date(`${day.date}T00:00:00`).toLocaleDateString(undefined, { weekday: 'short' })} {new Date(hour.startTime).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
-                          </Text>
-                          <Text style={styles.hourTemp}>{hour.temperature}°F</Text>
-                          <Text style={styles.hourDescription}>{hour.shortForecast}</Text>
-                        </View>
-                        <View style={styles.hourSecondary}>
-                          {hour.probabilityOfPrecipitation && hour.probabilityOfPrecipitation.value !== null && (
-                            <View style={styles.hourlyDetailItem}>
-                              <Text style={styles.hourlyDetailTitle}>Precip:</Text>
-                              <Text style={styles.hourlyDetailValue}>{hour.probabilityOfPrecipitation.value}%</Text>
-                            </View>
-                          )}
-                          <View style={styles.hourlyDetailItem}>
-                            <Text style={styles.hourlyDetailTitle}>Wind:</Text>
-                            <Text style={styles.hourlyDetailValue}>{hour.windSpeed} {hour.windDirection}</Text>
-                          </View>
-                          <View style={styles.hourlyDetailItem}>
-                            <Text style={styles.hourlyDetailTitle}>Humidity:</Text>
-                            <Text style={styles.hourlyDetailValue}>{hour.relativeHumidity.value}%</Text>
-                          </View>
-                          <View style={styles.hourlyDetailItem}>
-                            <Text style={styles.hourlyDetailTitle}>Dew Point:</Text>
-                            <Text style={styles.hourlyDetailValue}>{((hour.dewpoint.value * 9/5) + 32).toFixed(1)}°F</Text>
-                          </View>
-                        </View>
-                      </View>
-                    ))}
-                  </View>
-                )}
-              </View>
-            ))}
           </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
@@ -246,11 +260,11 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingVertical: 25,
+    paddingVertical: 5,
   },
   appContainer: {
     backgroundColor: '#ffffff',
-    padding: 20,
+    padding: 10,
     borderRadius: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -395,15 +409,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingTop: 10,
     paddingLeft: 15,
-    borderTopWidth: 1,
-    borderTopColor: '#cfd8dc',
+    borderTopWidth: 2,
+    borderTopColor: '#afb8bc',
     width: '100%',
   },
   hour: {
     flexDirection: 'row',
     paddingVertical: 5,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eceff1',
+    borderBottomWidth: 2,
+    borderBottomColor: '#cccfd1',
     gap: 0,
   },
   hourPrimary: {
