@@ -35,7 +35,11 @@ function App() {
     temperature: null,
     textDescription: 'No data available',
     windSpeed: null,
-    windDirection: ''
+    windDirection: '',
+    humidity: null,
+    heatIndex: null,
+    dewPoint: null,
+    observationTime: ''
   });
 
   // Load the last used zip code when the app starts
@@ -250,11 +254,32 @@ function App() {
                 temperature = (latestObservation.temperature.value * 9/5) + 32; // Convert C to F
               }
 
+              let humidity = null;
+              if (latestObservation.relativeHumidity && latestObservation.relativeHumidity.value !== undefined) {
+                humidity = latestObservation.relativeHumidity.value.toFixed(0); // Percentage
+              }
+
+              let heatIndexTemp = null;
+              if (latestObservation.heatIndex && latestObservation.heatIndex.value !== undefined) {
+                heatIndexTemp = (latestObservation.heatIndex.value * 9/5) + 32; // Convert C to F
+              }
+
+              let dewPointTemp = null;
+              if (latestObservation.dewpoint && latestObservation.dewpoint.value !== undefined) {
+                dewPointTemp = (latestObservation.dewpoint.value * 9/5) + 32; // Convert C to F
+              }
+
+              const observationTime = latestObservation.timestamp ? new Date(latestObservation.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Unknown';
+
               setCurrentWeather({
                 temperature: temperature,
                 textDescription: latestObservation.textDescription || 'No description available',
                 windSpeed: windSpeed,
-                windDirection: windDir
+                windDirection: windDir,
+                humidity: humidity,
+                heatIndex: heatIndexTemp,
+                dewPoint: dewPointTemp,
+                observationTime: observationTime
               });
             } catch (error) {
               console.error("Error processing current weather data:", error);
@@ -263,7 +288,11 @@ function App() {
                 temperature: null,
                 textDescription: 'Unable to retrieve current conditions',
                 windSpeed: null,
-                windDirection: ''
+                windDirection: '',
+                humidity: null,
+                heatIndex: null,
+                dewPoint: null,
+                observationTime: ''
               });
             }
           } else {
@@ -272,16 +301,30 @@ function App() {
               temperature: null,
               textDescription: 'No current observations available',
               windSpeed: null,
-              windDirection: ''
+              windDirection: '',
+              humidity: null,
+              heatIndex: null,
+              dewPoint: null,
+              observationTime: null
             });
           }
         } catch (error) {
           console.error("Error fetching current observations:", error);
           setCurrentWeather({
+              humidity: null,
+              heatIndex: null,
+              dewPoint: null,
+              observationTime: null
+            });
+          setCurrentWeather({
             temperature: null,
             textDescription: "Unable to retrieve current conditions",
             windSpeed: null,
-            windDirection: ""
+            windDirection: "",
+            humidity: null,
+            heatIndex: null,
+            dewPoint: null,
+            observationTime: null
           });
         }
       }
@@ -362,14 +405,22 @@ function App() {
             <View style={styles.currentWeatherContainer}>
               <Text style={styles.currentWeatherTitle}>Current Conditions:</Text>
               <View style={styles.currentWeatherDetails}>
-                {currentWeather.temperature !== null ? (
-                  <Text style={styles.currentWeatherTemp}>{currentWeather.temperature}°F</Text>
-                ) : (
-                  <Text style={[styles.currentWeatherTemp, styles.currentWeatherTempPlaceholder]}>--°F</Text>
-                )}
-                <Text style={styles.currentWeatherDescription}>{currentWeather.textDescription}</Text>
+                <View style={styles.currentWeatherTempContainer}>
+                  {currentWeather.temperature !== null ? (
+                    <Text style={styles.currentWeatherTemp}>{currentWeather.temperature}°F</Text>
+                  ) : (
+                    <Text style={[styles.currentWeatherTemp, styles.currentWeatherTempPlaceholder]}>--°F</Text>
+                  )}
+                  <Text style={styles.currentWeatherDescription}>{currentWeather.textDescription}</Text>
+                </View>
                 {currentWeather.windSpeed && currentWeather.windDirection ? (
                   <Text style={styles.currentWeatherWind}>Wind: {currentWeather.windSpeed} {currentWeather.windDirection}</Text>
+                ) : null}
+                {currentWeather.humidity !== null ? (
+                  <Text style={[styles.currentWeatherHumidity, styles.weatherDetailItem]}>Humidity: {currentWeather.humidity}%</Text>
+                ) : null}
+                {currentWeather.dewPoint !== null ? (
+                  <Text style={[styles.currentWeatherDewpoint, styles.weatherDetailItem]}>Dew Point: {currentWeather.dewPoint}°F</Text>
                 ) : null}
               </View>
             </View>
@@ -470,19 +521,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
+  currentWeatherTempContainer: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: 2,
+  },
   currentWeatherTemp: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#007bff',
   },
   currentWeatherTempPlaceholder: {
     color: '#9e9e9e', // Light gray for placeholder
+  },
+  weatherDetailItem: {
+    marginTop: 1,
+    marginBottom: 1,
   },
   currentWeatherDescription: {
     fontSize: 16,
     color: '#37474f',
   },
   currentWeatherWind: {
+    fontSize: 16,
+    color: '#546e7a',
+  },
+  currentWeatherHumidity: {
+    fontSize: 16,
+    color: '#546e7a',
+  },
+  currentWeatherDewpoint: {
     fontSize: 16,
     color: '#546e7a',
   },
@@ -717,7 +784,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
-  },
-});
+  }
+})
 
 export default App;
