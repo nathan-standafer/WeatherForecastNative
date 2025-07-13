@@ -31,6 +31,12 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [location, setLocation] = useState('');
+  const [currentWeather, setCurrentWeather] = useState({
+    temperature: null,
+    textDescription: 'No data available',
+    windSpeed: null,
+    windDirection: ''
+  });
 
   // Load the last used zip code when the app starts
   useEffect(() => {
@@ -149,6 +155,137 @@ function App() {
       console.log("Daily forecast data received:", forecastData);
       setDailyData(processDailyForecast(forecastData.properties.periods));
 
+      // Fetch observation stations
+      const stationsResp = await fetch(pointsData.properties.observationStations);
+      if (!stationsResp.ok) throw new Error('Error fetching observation stations');
+      const stationsData = await stationsResp.json();
+      console.log("Observation stations data received:", stationsData);
+
+      // Get the first station's current observations
+      if (stationsData.features && stationsData.features.length > 0) {
+        // Check if the ID is a full URL and extract just the station ID
+        const station = stationsData.features[0];
+        let firstStationId = station.id;
+
+        // If the ID contains "https://api.weather.gov/stations/", extract just the station code
+        console.log("Raw station data:", station);
+        if (typeof firstStationId === 'string' && firstStationId.includes('https://api.weather.gov/stations/')) {
+          const match = firstStationId.match(/https:\/\/api\.weather\.gov\/stations\/([^\/]+)(?:\/|$)/);
+          console.log("Regex match result:", match);
+          if (match && match[1]) {
+            firstStationId = match[1];
+            console.log("Extracted station ID:", firstStationId);
+          } else {
+            console.warn("Failed to extract station ID from URL");
+
+            // Try to find the station ID in other properties
+            if (station.properties && station.properties.stationIdentifier) {
+              firstStationId = station.properties.stationIdentifier;
+              console.log("Found station ID in properties:", firstStationId);
+            } else if (station.id.replace('https://api.weather.gov/stations/', '').replace('/', '')) {
+              // Fallback: try to extract manually
+              const manualExtract = firstStationId.replace('https://api.weather.gov/stations/', '').split('/')[0];
+              if (manualExtract) {
+                firstStationId = manualExtract;
+                console.log("Extracted station ID manually:", firstStationId);
+              } else {
+                // Last resort: use the ID as-is, but this might cause issues
+                console.warn("Using station ID as-is (might be a full URL):", firstStationId);
+              }
+            }
+          }
+        }
+
+        console.log(`Fetching observations from station: ${firstStationId}`);
+        let currentObsData = null;
+        try {
+          const currentObsResp = await fetch(`https://api.weather.gov/stations/${firstStationId}/observations`);
+          if (!currentObsResp.ok) {
+            const errorText = await currentObsResp.text();
+            throw new Error(`Error fetching current observations: ${currentObsResp.status} - ${errorText}`);
+          }
+          currentObsData = await currentObsResp.json();
+          console.log("Current observations data received:", currentObsData);
+
+          // Find the most recent observation
+          if (currentObsData && currentObsData.features && currentObsData.features.length > 0) {
+            // Sort features by timestamp to get the most recent one
+            const sortedFeatures = currentObsData.features.sort((a, b) => {
+              return new Date(b.properties.timestamp).getTime() - new Date(a.properties.timestamp).getTime();
+            });
+            const latestObservation = sortedFeatures[0].properties;
+
+            try {
+              // Convert wind direction from degrees to cardinal direction
+              let windDir = '';
+              let windSpeed = null;
+              let temperature = null;
+
+              if (latestObservation.windDirection && latestObservation.windDirection.value !== undefined) {
+                const dir = latestObservation.windDirection.value;
+                if (dir >= 337.5 || dir < 22.5) {
+                  windDir = 'N';
+                } else if (dir >= 22.5 && dir < 67.5) {
+                  windDir = 'NE';
+                } else if (dir >= 67.5 && dir < 112.5) {
+                  windDir = 'E';
+                } else if (dir >= 112.5 && dir < 157.5) {
+                  windDir = 'SE';
+                } else if (dir >= 157.5 && dir < 202.5) {
+                  windDir = 'S';
+                } else if (dir >= 202.5 && dir < 247.5) {
+                  windDir = 'SW';
+                } else if (dir >= 247.5 && dir < 292.5) {
+                  windDir = 'W';
+                } else if (dir >= 292.5 && dir < 337.5) {
+                  windDir = 'NW';
+                }
+              }
+
+              if (latestObservation.windSpeed && latestObservation.windSpeed.value !== undefined) {
+                windSpeed = (latestObservation.windSpeed.value * 0.621371).toFixed(1); // Convert km/h to mph
+              }
+
+              if (latestObservation.temperature && latestObservation.temperature.value !== undefined) {
+                temperature = (latestObservation.temperature.value * 9/5) + 32; // Convert C to F
+              }
+
+              setCurrentWeather({
+                temperature: temperature,
+                textDescription: latestObservation.textDescription || 'No description available',
+                windSpeed: windSpeed,
+                windDirection: windDir
+              });
+            } catch (error) {
+              console.error("Error processing current weather data:", error);
+              // Set a fallback state if there's an error processing the data
+              setCurrentWeather({
+                temperature: null,
+                textDescription: 'Unable to retrieve current conditions',
+                windSpeed: null,
+                windDirection: ''
+              });
+            }
+          } else {
+            // No observations found
+            setCurrentWeather({
+              temperature: null,
+              textDescription: 'No current observations available',
+              windSpeed: null,
+              windDirection: ''
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching current observations:", error);
+          setCurrentWeather({
+            temperature: null,
+            textDescription: "Unable to retrieve current conditions",
+            windSpeed: null,
+            windDirection: ""
+          });
+        }
+      }
+
       const hourlyResp = await fetch(`https://api.weather.gov/gridpoints/${gridId}/${gridX},${gridY}/forecast/hourly`);
       if (!hourlyResp.ok) throw new Error('Error fetching hourly forecast');
       const hourlyDataJson = await hourlyResp.json();
@@ -222,6 +359,21 @@ function App() {
 
             {location ? <Text style={styles.locationText}>Weather forecast for {location}</Text> : null}
 
+            <View style={styles.currentWeatherContainer}>
+              <Text style={styles.currentWeatherTitle}>Current Conditions:</Text>
+              <View style={styles.currentWeatherDetails}>
+                {currentWeather.temperature !== null ? (
+                  <Text style={styles.currentWeatherTemp}>{currentWeather.temperature}°F</Text>
+                ) : (
+                  <Text style={[styles.currentWeatherTemp, styles.currentWeatherTempPlaceholder]}>--°F</Text>
+                )}
+                <Text style={styles.currentWeatherDescription}>{currentWeather.textDescription}</Text>
+                {currentWeather.windSpeed && currentWeather.windDirection ? (
+                  <Text style={styles.currentWeatherWind}>Wind: {currentWeather.windSpeed} {currentWeather.windDirection}</Text>
+                ) : null}
+              </View>
+            </View>
+
             {loading ? <ActivityIndicator size="large" color="#007bff" /> : null}
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
@@ -292,6 +444,49 @@ function App() {
 }
 
 const styles = StyleSheet.create({
+  currentWeatherContainer: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#b0bec5',
+    borderRadius: 8,
+    padding: 15,
+    marginVertical: 10,
+    width: '100%',
+    maxWidth: 580,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  currentWeatherTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#263238',
+    marginBottom: 5,
+  },
+  currentWeatherDetails: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  currentWeatherTemp: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#007bff',
+  },
+  currentWeatherTempPlaceholder: {
+    color: '#9e9e9e', // Light gray for placeholder
+  },
+  currentWeatherDescription: {
+    fontSize: 16,
+    color: '#37474f',
+  },
+  currentWeatherWind: {
+    fontSize: 16,
+    color: '#546e7a',
+  },
+
   safeArea: {
     flex: 1,
     backgroundColor: '#e0f2f7',
