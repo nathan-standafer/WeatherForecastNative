@@ -3,7 +3,7 @@ import {
   SafeAreaView,
 } from 'react-native-safe-area-context';
 import { zipData } from './data/zipData';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -12,7 +12,11 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
+  Keyboard,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const LAST_ZIP_CODE_KEY = 'lastZipCode';
 
 function toTitleCase(str) {
   return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
@@ -28,13 +32,44 @@ function App() {
   const [error, setError] = useState('');
   const [location, setLocation] = useState('');
 
+  // Load the last used zip code when the app starts
+  useEffect(() => {
+    async function loadLastZipCode() {
+      try {
+        const lastZipCode = await AsyncStorage.getItem(LAST_ZIP_CODE_KEY);
+        if (lastZipCode !== null) {
+          setQuery(lastZipCode);
+        }
+      } catch (e) {
+        console.error("Failed to load last zip code", e);
+      }
+    }
+
+    loadLastZipCode();
+  }, []);
+
+  // Save the current zip code when it changes
+  useEffect(() => {
+    async function saveZipCode() {
+      try {
+        await AsyncStorage.setItem(LAST_ZIP_CODE_KEY, query);
+      } catch (e) {
+        console.error("Failed to save zip code", e);
+      }
+    }
+
+    if (query.length > 0) {
+      saveZipCode();
+    }
+  }, [query]);
+
   const handleTextChange = (text) => {
     setQuery(text);
     if (text.length >= 4 && isNaN(text)) {
       const filtered = zipData.filter(item =>
         item['PHYSICAL CITY'].toLowerCase().startsWith(text.toLowerCase())
       );
-      
+
       const uniqueMatches = [];
       const seen = new Set();
 
@@ -45,7 +80,7 @@ function App() {
           uniqueMatches.push(item);
         }
       }
-      
+
       uniqueMatches.sort((a, b) => {
         const cityA = a['PHYSICAL CITY'].toLowerCase();
         const cityB = b['PHYSICAL CITY'].toLowerCase();
@@ -66,12 +101,14 @@ function App() {
   };
 
   const onCitySelect = (city) => {
+    Keyboard.dismiss();
     setQuery(city['PHYSICAL ZIP']);
     setCitySuggestions([]);
     handleSubmit(city['PHYSICAL ZIP']);
   };
 
   const handleSubmit = async (zip) => {
+    Keyboard.dismiss(); // This line already hides the keyboard
     console.log("handleSubmit triggered");
     setError('');
     setLocation('');
@@ -166,7 +203,10 @@ function App() {
                 onChangeText={handleTextChange}
                 placeholder="Enter ZIP code or city name"
               />
-              <TouchableOpacity style={styles.button} onPress={() => handleSubmit(query)}>
+              <TouchableOpacity style={styles.button} onPress={() => {
+                Keyboard.dismiss();
+                handleSubmit(query);
+              }}>
                 <Text style={styles.buttonText}>Submit</Text>
               </TouchableOpacity>
             </View>
