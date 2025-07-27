@@ -402,28 +402,27 @@ function App() {
 
             {location ? <Text style={styles.locationText}>Weather forecast for {location}</Text> : null}
 
-            <View style={styles.currentWeatherContainer}>
-              <Text style={styles.currentWeatherTitle}>Current Conditions:</Text>
-              <View style={styles.currentWeatherDetails}>
-                <View style={styles.currentWeatherTempContainer}>
-                  {currentWeather.temperature !== null ? (
+            {/* Only show Current Conditions section when data has been successfully loaded */}
+            {!loading && !error && currentWeather.temperature !== null && (
+              <View style={styles.currentWeatherContainer}>
+                <Text style={styles.currentWeatherTitle}>Current Conditions:</Text>
+                <View style={styles.currentWeatherDetails}>
+                  <View style={styles.currentWeatherTempContainer}>
                     <Text style={styles.currentWeatherTemp}>{currentWeather.temperature}°F</Text>
-                  ) : (
-                    <Text style={[styles.currentWeatherTemp, styles.currentWeatherTempPlaceholder]}>--°F</Text>
-                  )}
-                  <Text style={styles.currentWeatherDescription}>{currentWeather.textDescription}</Text>
+                    <Text style={styles.currentWeatherDescription}>{currentWeather.textDescription}</Text>
+                  </View>
+                  {currentWeather.windSpeed && currentWeather.windDirection ? (
+                    <Text style={styles.currentWeatherWind}>Wind: {currentWeather.windSpeed} {currentWeather.windDirection}</Text>
+                  ) : null}
+                  {currentWeather.humidity !== null ? (
+                    <Text style={[styles.currentWeatherHumidity, styles.weatherDetailItem]}>Humidity: {currentWeather.humidity}%</Text>
+                  ) : null}
+                  {currentWeather.dewPoint !== null ? (
+                    <Text style={[styles.currentWeatherDewpoint, styles.weatherDetailItem]}>Dew Point: {currentWeather.dewPoint}°F</Text>
+                  ) : null}
                 </View>
-                {currentWeather.windSpeed && currentWeather.windDirection ? (
-                  <Text style={styles.currentWeatherWind}>Wind: {currentWeather.windSpeed} {currentWeather.windDirection}</Text>
-                ) : null}
-                {currentWeather.humidity !== null ? (
-                  <Text style={[styles.currentWeatherHumidity, styles.weatherDetailItem]}>Humidity: {currentWeather.humidity}%</Text>
-                ) : null}
-                {currentWeather.dewPoint !== null ? (
-                  <Text style={[styles.currentWeatherDewpoint, styles.weatherDetailItem]}>Dew Point: {currentWeather.dewPoint}°F</Text>
-                ) : null}
               </View>
-            </View>
+            )}
 
             {loading ? <ActivityIndicator size="large" color="#007bff" /> : null}
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
