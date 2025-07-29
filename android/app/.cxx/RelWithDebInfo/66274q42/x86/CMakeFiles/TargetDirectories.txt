@@ -1,0 +1,6 @@
+/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/.cxx/RelWithDebInfo/66274q42/x86/CMakeFiles/appmodules.dir
+/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/.cxx/RelWithDebInfo/66274q42/x86/CMakeFiles/edit_cache.dir
+/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/.cxx/RelWithDebInfo/66274q42/x86/CMakeFiles/rebuild_cache.dir
+/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/.cxx/RelWithDebInfo/66274q42/x86/safeareacontext_autolinked_build/CMakeFiles/react_codegen_safeareacontext.dir
+/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/.cxx/RelWithDebInfo/66274q42/x86/safeareacontext_autolinked_build/CMakeFiles/edit_cache.dir
+/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/.cxx/RelWithDebInfo/66274q42/x86/safeareacontext_autolinked_build/CMakeFiles/rebuild_cache.dir

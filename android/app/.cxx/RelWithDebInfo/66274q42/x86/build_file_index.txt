@@ -1,0 +1,2 @@
+/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt
+/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt

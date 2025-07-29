@@ -1,0 +1,49 @@
+{
+  "buildFiles": [
+    "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt",
+    "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/home/nathan/Android/Sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/.cxx/Debug/5j526k31/x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/home/nathan/Android/Sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/.cxx/Debug/5j526k31/x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "react_codegen_safeareacontext::@7984cd80db47aa7b952a": {
+      "artifactName": "react_codegen_safeareacontext",
+      "abi": "x86",
+      "output": "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/build/intermediates/cxx/Debug/5j526k31/obj/x86/libreact_codegen_safeareacontext.so",
+      "runtimeFiles": [
+        "/home/nathan/.gradle/caches/8.14.1/transforms/3ba4db1ae352eb90610ca685a00c889a/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86/libfbjni.so",
+        "/home/nathan/.gradle/caches/8.14.1/transforms/89ee2d71482aa90a74abf94579aa4b78/transformed/react-android-0.80.0-debug/prefab/modules/jsi/libs/android.x86/libjsi.so",
+        "/home/nathan/.gradle/caches/8.14.1/transforms/89ee2d71482aa90a74abf94579aa4b78/transformed/react-android-0.80.0-debug/prefab/modules/reactnative/libs/android.x86/libreactnative.so"
+      ]
+    },
+    "appmodules::@6890427a1f51a3e7e1df": {
+      "artifactName": "appmodules",
+      "abi": "x86",
+      "output": "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/build/intermediates/cxx/Debug/5j526k31/obj/x86/libappmodules.so",
+      "runtimeFiles": [
+        "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/build/intermediates/cxx/Debug/5j526k31/obj/x86/libreact_codegen_safeareacontext.so",
+        "/home/nathan/.gradle/caches/8.14.1/transforms/3ba4db1ae352eb90610ca685a00c889a/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86/libfbjni.so",
+        "/home/nathan/.gradle/caches/8.14.1/transforms/89ee2d71482aa90a74abf94579aa4b78/transformed/react-android-0.80.0-debug/prefab/modules/jsi/libs/android.x86/libjsi.so",
+        "/home/nathan/.gradle/caches/8.14.1/transforms/89ee2d71482aa90a74abf94579aa4b78/transformed/react-android-0.80.0-debug/prefab/modules/reactnative/libs/android.x86/libreactnative.so"
+      ]
+    },
+    "react_codegen_rnasyncstorage::@1596841e19ec5b9eeffe": {
+      "artifactName": "react_codegen_rnasyncstorage",
+      "abi": "x86",
+      "runtimeFiles": []
+    }
+  }
+}

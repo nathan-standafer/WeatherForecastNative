@@ -1,0 +1,4 @@
+/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/.cxx/RelWithDebInfo/66274q42/x86/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir
+/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/.cxx/RelWithDebInfo/66274q42/x86/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir
+/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/.cxx/RelWithDebInfo/66274q42/x86/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/edit_cache.dir
+/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/.cxx/RelWithDebInfo/66274q42/x86/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/rebuild_cache.dir
