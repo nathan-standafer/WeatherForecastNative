@@ -418,7 +418,18 @@ function App() {
             {/* Only show Current Conditions section when data has been successfully loaded */}
             {!loading && !error && currentWeather.temperature !== null && (
               <View style={styles.currentWeatherContainer}>
-                <Text style={styles.currentWeatherTitle}>Current Conditions:</Text>
+
+                <Text style={styles.currentWeatherTitle}>
+                  Current Conditions - {new Date().toLocaleString('default', {
+                    weekday: 'short',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                  })}
+                </Text>
+
                 <View style={[styles.hourlyDetails, styles.currentWeatherDetails]}>
                   <View style={styles.hour}>
                     <View style={styles.hourPrimary}>
@@ -531,8 +542,6 @@ function App() {
 const styles = StyleSheet.create({
   currentWeatherContainer: {
     backgroundColor: '#ffffff',
-    borderWidth: 1,
-    borderColor: '#b0bec5',
     borderRadius: 8,
     padding: 15,
     marginVertical: 10,
