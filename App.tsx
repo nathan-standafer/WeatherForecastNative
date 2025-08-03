@@ -253,7 +253,7 @@ function App() {
               }
 
               if (latestObservation.temperature && latestObservation.temperature.value !== undefined) {
-                temperature = (latestObservation.temperature.value * 9/5) + 32; // Convert C to F
+                temperature = ((latestObservation.temperature.value * 9/5) + 32).toFixed(1); // Convert C to F and round to nearest 0.1 degrees
               }
 
               let humidity = null;
@@ -263,12 +263,12 @@ function App() {
 
               let heatIndexTemp = null;
               if (latestObservation.heatIndex && latestObservation.heatIndex.value !== undefined) {
-                heatIndexTemp = (latestObservation.heatIndex.value * 9/5) + 32; // Convert C to F
+                heatIndexTemp = ((latestObservation.heatIndex.value * 9/5) + 32).toFixed(1); // Convert C to F and round to nearest 0.1 degrees
               }
 
               let dewPointTemp = null;
               if (latestObservation.dewpoint && latestObservation.dewpoint.value !== undefined) {
-                dewPointTemp = (latestObservation.dewpoint.value * 9/5) + 32; // Convert C to F
+                dewPointTemp = ((latestObservation.dewpoint.value * 9/5) + 32).toFixed(1); // Convert C to F and round to nearest 0.1 degrees
               }
 
               let barometricPressure = null;
@@ -346,7 +346,12 @@ function App() {
       if (!hourlyResp.ok) throw new Error('Error fetching hourly forecast');
       const hourlyDataJson = await hourlyResp.json();
       console.log("Hourly forecast data received:", hourlyDataJson);
-      setHourlyData(hourlyDataJson.properties.periods);
+      // Process hourly data to round temperatures to nearest 0.1 degrees
+      const processedHourlyData = hourlyDataJson.properties.periods.map(hour => ({
+        ...hour,
+        temperature: parseFloat(hour.temperature.toFixed(1))
+      }));
+      setHourlyData(processedHourlyData);
     } catch (err) {
       console.error("Error in handleSubmit:", err);
       setError(err.message);
@@ -368,8 +373,8 @@ function App() {
       const dayPeriods = groups[date];
       const dayPeriod = dayPeriods.find((p) => p.isDaytime);
       const nightPeriod = dayPeriods.find((p) => !p.isDaytime);
-      const high = dayPeriod ? dayPeriod.temperature : Math.max(...dayPeriods.map((p) => p.temperature));
-      const low = nightPeriod ? nightPeriod.temperature : Math.min(...dayPeriods.map((p) => p.temperature));
+      const high = dayPeriod ? parseFloat(dayPeriod.temperature.toFixed(1)) : Math.max(...dayPeriods.map((p) => parseFloat(p.temperature.toFixed(1))));
+      const low = nightPeriod ? parseFloat(nightPeriod.temperature.toFixed(1)) : Math.min(...dayPeriods.map((p) => parseFloat(p.temperature.toFixed(1))));
       const description = dayPeriod ? dayPeriod.shortForecast : dayPeriods[0].shortForecast;
       return { date, high, low, description, icon: dayPeriod ? dayPeriod.icon : dayPeriods[0].icon };
     });
@@ -420,7 +425,7 @@ function App() {
               <View style={styles.currentWeatherContainer}>
 
                 <Text style={styles.currentWeatherTitle}>
-                  Current Conditions - {new Date().toLocaleString('default', {
+                  Current Weather: {new Date().toLocaleString('default', {
                     weekday: 'short',
                     month: 'long',
                     day: 'numeric',
@@ -431,7 +436,7 @@ function App() {
                 </Text>
 
                 <View style={[styles.hourlyDetails, styles.currentWeatherDetails]}>
-                  <View style={styles.hour}>
+                  <View style={[styles.hour, styles.currentWeatherHour]}>
                     <View style={styles.hourPrimary}>
                       <Text style={styles.currentConditionsTemp}>{currentWeather.temperature}°F</Text>
                       <Text style={styles.hourDescription}>{currentWeather.textDescription}</Text>
@@ -455,8 +460,6 @@ function App() {
                           <Text style={styles.hourlyDetailValue}>{currentWeather.dewPoint}°F</Text>
                         </View>
                       ) : null}
-
-
                       {currentWeather.barometricPressure !== null ? (
                         <View style={styles.hourlyDetailItem}>
                           <Text style={styles.hourlyDetailTitle}>Pressure:</Text>
@@ -557,7 +560,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#263238',
-    marginBottom: 5,
+    marginBottom: 0,
   },
   currentWeatherDetails: {
     paddingTop: 5,
@@ -736,6 +739,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: '#cccfd1',
     gap: 0,
+  },
+  currentWeatherHour: {
+    borderBottomWidth: 0,
   },
   hourPrimary: {
     width: '40%',
