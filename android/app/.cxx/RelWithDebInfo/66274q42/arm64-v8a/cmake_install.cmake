@@ -44,6 +44,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
+  include("/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/.cxx/RelWithDebInfo/66274q42/arm64-v8a/rnasyncstorage_autolinked_build/cmake_install.cmake")
   include("/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/.cxx/RelWithDebInfo/66274q42/arm64-v8a/safeareacontext_autolinked_build/cmake_install.cmake")
 
 endif()

@@ -12,6 +12,31 @@ if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   file(TOUCH_NOCREATE "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/.cxx/RelWithDebInfo/66274q42/arm64-v8a/CMakeFiles/cmake.verify_globs")
 endif()
 
+# react_codegen_SRCS at /media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/*.cpp")
+set(OLD_GLOB
+  "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/rnasyncstorage-generated.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/.cxx/RelWithDebInfo/66274q42/arm64-v8a/CMakeFiles/cmake.verify_globs")
+endif()
+
+# react_codegen_SRCS at /media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/react/renderer/components/rnasyncstorage/*.cpp")
+set(OLD_GLOB
+  "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/react/renderer/components/rnasyncstorage/ComponentDescriptors.cpp"
+  "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/react/renderer/components/rnasyncstorage/EventEmitters.cpp"
+  "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/react/renderer/components/rnasyncstorage/Props.cpp"
+  "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/react/renderer/components/rnasyncstorage/ShadowNodes.cpp"
+  "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/react/renderer/components/rnasyncstorage/States.cpp"
+  "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/react/renderer/components/rnasyncstorage/rnasyncstorageJSI-generated.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/android/app/.cxx/RelWithDebInfo/66274q42/arm64-v8a/CMakeFiles/cmake.verify_globs")
+endif()
+
 # LIB_CUSTOM_SRCS at /media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt:22 (file)
 file(GLOB NEW_GLOB LIST_DIRECTORIES true "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/react-native-safe-area-context/android/src/main/jni/*.cpp")
 set(OLD_GLOB

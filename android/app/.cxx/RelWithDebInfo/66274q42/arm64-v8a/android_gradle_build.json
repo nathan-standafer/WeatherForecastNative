@@ -1,5 +1,6 @@
 {
   "buildFiles": [
+    "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt",
     "/media/nathan/linux_ssd/github/openhands_cli_2/WeatherForecastNative/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt"
   ],
@@ -29,6 +30,11 @@
         "/home/nathan/.gradle/caches/8.14.1/transforms/1c9225614e4d0ab975f35005d007a9db/transformed/react-android-0.80.0-release/prefab/modules/jsi/libs/android.arm64-v8a/libjsi.so",
         "/home/nathan/.gradle/caches/8.14.1/transforms/1c9225614e4d0ab975f35005d007a9db/transformed/react-android-0.80.0-release/prefab/modules/reactnative/libs/android.arm64-v8a/libreactnative.so"
       ]
+    },
+    "react_codegen_rnasyncstorage::@1596841e19ec5b9eeffe": {
+      "toolchain": "toolchain",
+      "abi": "arm64-v8a",
+      "artifactName": "react_codegen_rnasyncstorage"
     },
     "react_codegen_safeareacontext::@7984cd80db47aa7b952a": {
       "toolchain": "toolchain",
