@@ -384,9 +384,24 @@ function App() {
     setExpandedDate(expandedDate === date ? null : date);
   };
 
-  const hoursForDate = (date) => hourlyData.filter((hour) =>
-    hour.startTime.startsWith(date)
-  );
+  const hoursForDate = (date) => {
+    // Filter hours for the given date that are at or after the current time
+    // Include the current hour even if it's partially completed
+    const now = new Date();
+    return hourlyData.filter((hour) => {
+      if (!hour.startTime.startsWith(date)) return false;
+      const hourDate = new Date(hour.startTime);
+      // Check if this is today and the hour is in the past, excluding current hour
+      const isToday = date === now.toISOString().split('T')[0];
+      if (isToday && hourDate < now) {
+        // Get the start of the current hour
+        const currentHourStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(),
+                                         now.getHours(), 0, 0);
+        return hourDate >= currentHourStart;
+      }
+      return true; // For other days or future hours on today
+    });
+  };
 
   return (
     <SafeAreaProvider>
