@@ -1,97 +1,217 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# 🌤️ Weather Forecast Native
 
-# Getting Started
+<p align="center">
+  <img src="https://img.shields.io/badge/React_Native-0.80.0-61DAFB?style=for-the-badge&logo=react&logoColor=white" alt="React Native" />
+  <img src="https://img.shields.io/badge/TypeScript-5.0.4-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Platform-iOS%20%7C%20Android-lightgrey?style=for-the-badge" alt="Platform" />
+  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License" />
+</p>
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+<p align="center">
+  A beautiful, native mobile weather application that provides detailed forecasts powered by the National Weather Service (NWS) API. No backend server required – all data is fetched directly from official government weather services.
+</p>
 
-## Step 1: Start Metro
+---
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## ✨ Features
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- **🔍 Smart Location Search** – Search by ZIP code or city name with auto-complete suggestions
+- **🌡️ Current Conditions** – Real-time temperature, humidity, wind speed, heat index, dew point, and barometric pressure
+- **📅 7-Day Forecast** – Daily high/low temperatures with weather descriptions
+- **🕐 Hourly Forecast** – Detailed hour-by-hour predictions (tap any day to expand)
+- **📝 Detailed Narratives** – Full NWS forecast descriptions for day and night periods
+- **🛰️ NOAA Radar** – One-tap access to interactive weather radar for your location
+- **💾 Persistent Storage** – Remembers your last searched location
+- **📱 Native Performance** – Smooth, responsive UI built with React Native
 
-```sh
-# Using npm
-npm start
+## 🌐 Data Sources & APIs
 
-# OR using Yarn
-yarn start
+This application fetches weather data directly from official U.S. government services:
+
+| Service | Description | Endpoint |
+|---------|-------------|----------|
+| **NWS Points API** | Resolves coordinates to forecast grid | `api.weather.gov/points/{lat},{lon}` |
+| **NWS Forecast API** | 7-day daily forecast data | `api.weather.gov/gridpoints/{office}/{x},{y}/forecast` |
+| **NWS Hourly API** | Hour-by-hour forecast data | `api.weather.gov/gridpoints/{office}/{x},{y}/forecast/hourly` |
+| **NWS Stations API** | Current observation data | `api.weather.gov/stations/{id}/observations` |
+| **NOAA Radar** | Interactive weather radar | `radar.weather.gov` |
+
+> **Note:** The NWS API is free, requires no API key, and provides data for U.S. locations only.
+
+## 📋 Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Node.js** (v18 or higher) – [Download](https://nodejs.org/)
+- **Yarn** (recommended) or npm
+- **React Native CLI** – `npm install -g @react-native-community/cli`
+- **Xcode** (for iOS development, macOS only)
+- **Android Studio** (for Android development)
+- **CocoaPods** (for iOS) – `sudo gem install cocoapods`
+
+For detailed environment setup, follow the official [React Native Environment Setup Guide](https://reactnative.dev/docs/set-up-your-environment).
+
+## 🚀 Quick Start
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/nathan-standafer/WeatherForecastNative.git
+cd WeatherForecastNative
 ```
 
-## Step 2: Build and run your app
+### 2. Install Dependencies
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+```bash
+# Using Yarn (recommended)
+yarn install
+
+# OR using npm
+npm install
+```
+
+### 3. iOS Setup (macOS only)
+
+Install CocoaPods dependencies:
+
+```bash
+# First time setup - install CocoaPods via Bundler
+bundle install
+
+# Install iOS native dependencies
+cd ios && bundle exec pod install && cd ..
+```
+
+### 4. Start the Metro Bundler
+
+In a terminal window, start the Metro development server:
+
+```bash
+yarn start
+# OR
+npm start
+```
+
+### 5. Run the Application
+
+Open a **new terminal window** and run:
+
+#### Android
+```bash
+yarn android
+# OR
+npm run android
+```
+
+#### iOS
+```bash
+yarn ios
+# OR
+npm run ios
+```
+
+## 📱 Running on a Physical Device
 
 ### Android
+1. Enable **Developer Options** and **USB Debugging** on your device
+2. Connect your device via USB
+3. Run `adb devices` to verify connection
+4. Run `yarn android`
 
-```sh
-# Using npm
-npm run android
+### iOS
+1. Open `ios/WeatherForecastNative.xcworkspace` in Xcode
+2. Select your device from the device dropdown
+3. Configure signing with your Apple Developer account
+4. Click **Run** or press `Cmd + R`
 
-# OR using Yarn
+## 🏗️ Project Structure
+
+```
+WeatherForecastNative/
+├── App.tsx                 # Main application component
+├── data/
+│   └── zipData.ts          # ZIP code database for location lookup
+├── ios/                    # iOS native code
+├── android/                # Android native code
+├── __tests__/              # Test files
+├── package.json            # Dependencies and scripts
+├── tsconfig.json           # TypeScript configuration
+└── README.md               # You are here!
+```
+
+## 🛠️ Technology Stack
+
+| Category | Technology |
+|----------|------------|
+| **Framework** | React Native 0.80 |
+| **Language** | TypeScript 5.0 |
+| **State Management** | React Hooks (useState, useEffect) |
+| **Storage** | AsyncStorage |
+| **HTTP Client** | Fetch API |
+| **Styling** | React Native StyleSheet |
+
+## 🔧 Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `yarn start` | Start the Metro bundler |
+| `yarn android` | Build and run on Android |
+| `yarn ios` | Build and run on iOS |
+| `yarn lint` | Run ESLint for code quality |
+| `yarn test` | Run Jest test suite |
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Metro bundler port in use:**
+```bash
+yarn start --reset-cache
+```
+
+**iOS build fails after dependency update:**
+```bash
+cd ios && rm -rf Pods Podfile.lock && bundle exec pod install && cd ..
+```
+
+**Android build fails:**
+```bash
+cd android && ./gradlew clean && cd ..
 yarn android
 ```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+**Clear all caches:**
+```bash
+watchman watch-del-all
+rm -rf node_modules
+yarn install
+yarn start --reset-cache
 ```
 
-Then, and every time you update your native dependencies, run:
+For more troubleshooting tips, see the [React Native Troubleshooting Guide](https://reactnative.dev/docs/troubleshooting).
 
-```sh
-bundle exec pod install
-```
+## 🤝 Contributing
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-```sh
-# Using npm
-npm run ios
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-# OR using Yarn
-yarn ios
-```
+## 📄 License
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+## 🙏 Acknowledgments
 
-## Step 3: Modify your app
+- [National Weather Service API](https://www.weather.gov/documentation/services-web-api) for providing free, reliable weather data
+- [NOAA](https://www.noaa.gov/) for the interactive radar service
+- [React Native Community](https://reactnative.dev/) for the excellent framework and documentation
 
-Now that you have successfully run the app, let's make changes!
+---
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+<p align="center">
+  Made with ❤️ and ☕
+</p>
