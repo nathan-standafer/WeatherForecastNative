@@ -411,9 +411,9 @@ function App() {
       menu: false,
       shortFusedOnly: false,
       opacity: {
-        alerts: 0.4,
-        local: 0.3,
-        localStations: 0.4,
+        alerts: 0.2,
+        local: 0.15,
+        localStations: 0.2,
         national: 0.6,
       },
     };
