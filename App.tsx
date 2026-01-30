@@ -13,6 +13,7 @@ import {
   ActivityIndicator,
   ScrollView,
   Keyboard,
+  Linking,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -31,6 +32,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [location, setLocation] = useState('');
+  const [coordinates, setCoordinates] = useState({ lat: null, lon: null });
   const [currentWeather, setCurrentWeather] = useState({
     temperature: null,
     textDescription: 'No data available',
@@ -146,6 +148,7 @@ function App() {
       setLocation(`${place["place name"]}, ${place["state abbreviation"]}`);
       const lat = place.latitude;
       const lon = place.longitude;
+      setCoordinates({ lat, lon });
       console.log(`Lat: ${lat}, Lon: ${lon}`);
 
       const pointsResp = await fetch(`https://api.weather.gov/points/${lat},${lon}`);
@@ -376,12 +379,52 @@ function App() {
       const high = dayPeriod ? parseFloat(dayPeriod.temperature.toFixed(1)) : Math.max(...dayPeriods.map((p) => parseFloat(p.temperature.toFixed(1))));
       const low = nightPeriod ? parseFloat(nightPeriod.temperature.toFixed(1)) : Math.min(...dayPeriods.map((p) => parseFloat(p.temperature.toFixed(1))));
       const description = dayPeriod ? dayPeriod.shortForecast : dayPeriods[0].shortForecast;
-      return { date, high, low, description, icon: dayPeriod ? dayPeriod.icon : dayPeriods[0].icon };
+      const detailedForecast = dayPeriod ? dayPeriod.detailedForecast : dayPeriods[0].detailedForecast;
+      const nightDetailedForecast = nightPeriod ? nightPeriod.detailedForecast : null;
+      return { date, high, low, description, detailedForecast, nightDetailedForecast, icon: dayPeriod ? dayPeriod.icon : dayPeriods[0].icon };
     });
   };
 
   const toggleExpand = (date) => {
     setExpandedDate(expandedDate === date ? null : date);
+  };
+
+  const openRadar = () => {
+    if (coordinates.lat === null || coordinates.lon === null) {
+      return;
+    }
+
+    const radarConfig = {
+      agenda: {
+        id: 'weather',
+        center: [coordinates.lon, coordinates.lat],
+        location: [coordinates.lon, coordinates.lat],
+        zoom: 11,
+      },
+      animating: false,
+      base: 'standard',
+      artcc: false,
+      county: false,
+      cwa: false,
+      rfc: false,
+      state: false,
+      menu: false,
+      shortFusedOnly: false,
+      opacity: {
+        alerts: 0.4,
+        local: 0.3,
+        localStations: 0.4,
+        national: 0.6,
+      },
+    };
+
+    const configString = JSON.stringify(radarConfig);
+    const base64Config = btoa(configString);
+    const radarUrl = `https://radar.weather.gov/?settings=v1_${base64Config}`;
+    
+    Linking.openURL(radarUrl).catch(err => 
+      console.error('Failed to open radar URL:', err)
+    );
   };
 
   const hoursForDate = (date) => {
@@ -423,6 +466,11 @@ function App() {
                 <Text style={styles.buttonText}>Submit</Text>
               </TouchableOpacity>
             </View>
+            {coordinates.lat !== null && coordinates.lon !== null && (
+              <TouchableOpacity style={styles.radarButton} onPress={openRadar}>
+                <Text style={styles.radarButtonText}>🛰️ Open NOAA Radar</Text>
+              </TouchableOpacity>
+            )}
             {citySuggestions.length > 0 && (
               <View style={styles.suggestionsContainer}>
                 {citySuggestions.map((item, index) => (
@@ -514,6 +562,18 @@ function App() {
                   </TouchableOpacity>
                   {expandedDate === day.date && (
                     <View style={styles.hourlyDetails}>
+                      {day.detailedForecast && (
+                        <View style={styles.detailedForecastContainer}>
+                          <Text style={styles.detailedForecastLabel}>Day:</Text>
+                          <Text style={styles.detailedForecastText}>{day.detailedForecast}</Text>
+                        </View>
+                      )}
+                      {day.nightDetailedForecast && (
+                        <View style={styles.detailedForecastContainer}>
+                          <Text style={styles.detailedForecastLabel}>Night:</Text>
+                          <Text style={styles.detailedForecastText}>{day.nightDetailedForecast}</Text>
+                        </View>
+                      )}
                       {hoursForDate(day.date).map((hour) => (
                         <View key={hour.startTime} style={styles.hour}>
                           <View style={styles.hourPrimary}>
@@ -820,7 +880,38 @@ const styles = StyleSheet.create({
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
-  }
+  },
+  radarButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#28a745',
+    borderRadius: 8,
+    marginTop: 10,
+    marginBottom: 5,
+  },
+  radarButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  detailedForecastContainer: {
+    marginBottom: 12,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#cccfd1',
+  },
+  detailedForecastLabel: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#455a64',
+    marginBottom: 4,
+  },
+  detailedForecastText: {
+    fontSize: 14,
+    color: '#37474f',
+    lineHeight: 20,
+  },
 })
 
 export default App;
